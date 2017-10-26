@@ -30,3 +30,7 @@ app.use(expressValidator());
 app.post('/aggiungi',function(req,res) {
   aggiungiscuole(req,res,connessione,escapeHtml);
 })
+
+app.listen(process.env.PORT, function() {
+  return console.log("Avviato server REST su porta " + process.env.PORT);
+});

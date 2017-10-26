@@ -1,4 +1,16 @@
-module.exports = (req,res,connessione,escapeHtml)
+# corpo richiesta HTTP per aggiungere scuole:
+# nomescuola= nome della scuola da aggiungere
+# regione = nome regione da aggiungere
+# comune = nome comune da aggiungere
+# email = email del proponente (aiuta nel processo di verifica)
+#
+#
+#
+#
+#
+
+
+module.exports = (req,res,connessione,escapeHtml) ->
   req.checkBody('nomescuole', 'Nome scuola non valido').isAlpha();
   req.checkBody('regione', 'Nome regione non valido').isAlpha();
   req.checkBody('comune', 'Nome comune non valido').isAlpha();
@@ -12,7 +24,8 @@ module.exports = (req,res,connessione,escapeHtml)
   email = req.body.email
   errors = req.validationErrors()
   if errors
-    res.write errors
+    res.send "c'è stato l'errore"+errors
+    return 1
   else
     connessione.query "INSERT INTO scuoleproposte (nomescuola,regione,comune,emailproponente)\nVALUES "+
     "("+
@@ -27,6 +40,7 @@ module.exports = (req,res,connessione,escapeHtml)
       if err
         throw err
       else
-        res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
-        res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
-        res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
+        res.writeHead 200, {'Content-Type': 'text/plain','title': 'Tutto OK'}
+        res.write 'Abbiamo ricevuto la tua richiesta'
+        res.end
+      return 0

@@ -4,7 +4,7 @@
   "description": "VAlutazione SCuole ITaliane",
   "main": "server.js",
   "scripts": {
-    "compile": "./node_modules/coffeescript/bin/coffee -c server.coffee;node ./node_modules/babel-cli/bin/babel --presets react public/jsx/react.jsx -o public/js/react.js",
+    "compile": "./node_modules/coffeescript/bin/coffee -c postproposta.coffee;./node_modules/coffeescript/bin/coffee -c server.coffee;node ./node_modules/babel-cli/bin/babel --presets react public/jsx/react.jsx -o public/js/react.js",
     "start": "node server.js",
     "siege": "siege -c10 -t1M http://localhost:3000",
     "test": "npm run-script compile"
