@@ -1,0 +1,24 @@
+{
+  "name": "vascit",
+  "version": "1.0.0",
+  "description": "VAlutazione SCuole ITaliane",
+  "main": "server.js",
+  "scripts": {
+    "compile": "coffee -c server.coffee;node ./node_modules/babel-cli/bin/babel --presets react public/jsx/react.jsx -o public/js/react.js",
+    "start": "node server.js",
+    "test": "siege -c10 -t1M http://localhost:3000"
+  },
+  "author": "Carmine e Angelo",
+  "license": "EUPL-1.1",
+  "dependencies": {
+    "compression": "^1.7.1",
+    "express": "^4.16.2",
+    "express-validator": "^4.2.1",
+    "helmet": "^3.9.0",
+    "mysql": "^2.15.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-syntax-jsx": "^6.18.0"
+  }
+}
