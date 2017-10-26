@@ -11,6 +11,7 @@ var helmet = require('helmet');
 var start = require('./start');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
+var aggiungiscuole = require('./postproposta')
 
 var navbar = start.header;
 var head = start.head;
@@ -25,3 +26,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(expressValidator());
+
+app.post('/aggiungi',function(req,res) {
+  aggiungiscuole(req,res,connessione,escapeHtml);
+})

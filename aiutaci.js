@@ -1,6 +1,4 @@
-<!doctype html>
-<html lang="en">
-  <head>
+module.exports = `<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Valutazione scuole italiane">
@@ -25,13 +23,13 @@
             <a class="nav-link" href="#">Ar <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="aiutaci.html">Proposta scuole(ancora non convertito)</a>
+            <a class="nav-link" href="/aiutaci.html">Proposta scuole(ancora non convertito)</a>
           </li>
           <li class="nav-item">
             <!--a class="nav-link disabled" href="#">Disabled</a-->
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://vascit.carzacc.info" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sito vecchio</a>
+            <a class="nav-link dropdown-toggle" href="/" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sito vecchio</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="#">Vascit</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,13 +41,13 @@
             <a class="nav-link" href="#">Ar <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="aiutaci.html">Proposta scuole(ancora non convertito)</a>
+            <a class="nav-link" href="/aiutaci.html">Proposta scuole(ancora non convertito)</a>
           </li>
           <li class="nav-item">
             <!--a class="nav-link disabled" href="#">Disabled</a-->
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://vascit.carzacc.info" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sito vecchio</a>
+            <a class="nav-link dropdown-toggle" href="/" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sito vecchio</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
               <a class="dropdown-item" href="/home.html">Home(ricerca scuole)</a>
               <a class="dropdown-item" href="/nuovascuola.html">Aggiunta scuole</a>
@@ -58,10 +56,10 @@
 
           </li>
         </ul>
-        <!--form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+        <form class="form-inline my-2 my-lg-0" action="/cerca" method="get">
+          <input name="scuola" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form-->
+        </form>
       </div>
     </nav>
     <main role="main" class="container">
@@ -92,3 +90,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
   </body>
 </html>
+`

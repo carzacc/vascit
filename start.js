@@ -1,5 +1,5 @@
 module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="http://vascit.carzacc.info">Vascit</a>
+      <a class="navbar-brand" href="/">Vascit</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -10,7 +10,7 @@ module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-da
             <a class="nav-link" href="#">Ar <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="aiutaci.html">Proposta scuole</a>
+            <a class="nav-link" href="/aiutaci">Proposta scuole</a>
           </li>
           <li class="nav-item">
             <!--a class="nav-link disabled" href="#">Disabled</a-->
@@ -31,13 +31,16 @@ module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-da
         </form-->
       </div>
     </nav>`
-module.exports.head = ` <head>
+module.exports.head = function(valore)  {
+  let datornare = ` <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="Valutazione scuole italiane">
 <meta name="author" content="Carzacc">
-<title>Vascit - Ricerca</title>
+<title>${valore} - Ricerca con Vascit</title>
 `
+  return datornare
+}
 module.exports.scripts = `<!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->

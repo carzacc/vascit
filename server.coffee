@@ -12,6 +12,8 @@ start = require './start'
 bodyParser = require 'body-parser'
 expressValidator = require 'express-validator'
 
+aiutaci = require './aiutaci'
+
 navbar = start.header
 head = start.head
 scripts = start.scripts
@@ -29,6 +31,14 @@ app.use expressValidator()
   #    if scuole[i].nomescuola==req.
   #console.log req.get
   #next();
+
+app.get '/aiutaci.html',(req,res) ->
+  res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
+  res.write aiutaci
+  res.end
+
+app.use('/', express.static('public'))
+
 
 app.post '/aggiungi',(req,res) ->
   req.checkBody('nomescuole', 'Nome scuola non valido').isAlpha();
@@ -99,10 +109,11 @@ app.get '/cerca', (req,res) ->
       cont=0
       res.write '<meta charset="utf-8">'
       res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
-      res.write head
+      dochead = head(campo)
+      res.write dochead
       res.write navbar
       for i in [0...scuole.length]
-        if scuole[i].nomescuola.includes(campo)
+        if scuole[i].nomescuola.toLowerCase().includes(campo.toLowerCase())
           scuolacercata[cont++]=scuole[i]
       if scuolacercata[0]==null
         res.write 'Non è stata trovata alcuna scuole</body>'
@@ -113,7 +124,8 @@ app.get '/cerca', (req,res) ->
           '<b>Valutazione: </b>'+scuolacercata[c].valutazione+'<br>'+
           '<b>Descrizione: </b>'+scuolacercata[c].descrizione+'<br></div></div>'
   res.write scripts
-  res.end '</body>'
+  res.write '</body>'
+  res.end
 
 
 
@@ -156,7 +168,8 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
   res.writeHead 200, {'Content-Type': 'text/html','title': 'Scuole a '+postodacercare}
   res.write '<meta charset="utf-8">'
   res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
-  res.write head
+  dochead = head(postodacercare)
+  res.write dochead
   res.write navbar
   if(scuolagiusta[0]==null)
     res.end "<h1>Non ci sono scuole nel "+escapeHtml(req.query.regocom)+" "+postodacercare+" oppure "+postodacercare+" non è un "+escapeHtml(req.query.regocom)+ "</h1>"
@@ -173,5 +186,3 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
 
 app.listen process.env.PORT, () ->
   console.log "Avviato server su porta "+process.env.PORT
-
-app.use('/', express.static('public'))
