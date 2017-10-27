@@ -7,7 +7,7 @@ module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-da
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Ar <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/admin.html">Admin <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/aiutaci">Proposta scuole</a>
@@ -25,10 +25,10 @@ module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-da
 
           </li>
         </ul>
-        <!--form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+        <form class="form-inline my-2 my-lg-0" method="get" action="/cerca">
+          <input class="form-control mr-sm-2" type="text" name="scuola" placeholder="Cerca scuole per nome" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form-->
+        </form>
       </div>
     </nav>`
 module.exports.head = function(valore)  {
