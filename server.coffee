@@ -11,30 +11,67 @@ start = require './start'
 #cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
 expressValidator = require 'express-validator'
-
+crypto = require 'crypto'
 aiutaci = require './aiutaci'
+passport = require 'passport'
+bcrypt = require 'bcrypt-nodejs'
+LocalStrategy   = require('passport-local').Strategy
 
 navbar = start.header
 head = start.head
 scripts = start.scripts
+adminbar = start.adminbar
+adminhead = start.adminhead
 connessione = mysql.createConnection process.env.CLEARDB_DATABASE_URL
-# Create the Express application object
+
+
+amministratore = 0
+trovato = false
+
+passport.use 'local-login', new LocalStrategy {
+    usernameField : 'username',
+    passwordField : 'password',
+    passReqToCallback : true # allows us to pass back the entire request to the callback
+}, (req, username, password, done) ->
+    # find a user whose username is the same as the form's username
+    # we are checking to see if the user trying to login already exists
+    # if there are any errors, return the error before anything else
+    connessione.query "SELECT * FROM amministratori",(err,utenti,campi) ->
+        if err
+            return done(err);
+        # if no user is found, return the message
+        for i in [0...utenti.length]
+          if username==utenti[i].username
+            trovato=true
+            amministratore=1
+            break
+        if !trovato
+          return done(null, false, req.flash('loginMessage', 'No user found.')); # req.flash is the way to set flashdata using connect-flash
+
+        # if the user is found but the password is wrong
+        if utenti[i].password!=password
+            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); # create the loginMessage and save it to session as flashdata
+
+        # all is well, return successful user
+        return done(null, user);
+
+
 app = express()
 app.use helmet()
 app.use compression()
 app.use bodyParser.json()
 app.use bodyParser.urlencoded { extended: false }
 app.use expressValidator()
-#app.get '/*', (req, res, next) ->
-  #connessione.query "SELECT * FROM SCUOLE", err,scuole,campi ->
-  #  for i in [0...scuole.length]
-  #    if scuole[i].nomescuola==req.
-  #console.log req.get
-  #next();
-
-app.get '/aiutaci.html',(req,res) ->
-  res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
-  res.write aiutaci
+###########################################################################
+#app.get '/*', (req, res, next) ->                                       #
+# connessione.query "SELECT * FROM SCUOLE", err,scuole,campi ->          #
+#   for i in [0...scuole.length]                                         #
+#     if scuole[i].nomescuola==req.                                      #
+# console.log req.get                                                    #
+# next();                                                                #
+###########################################################################
+app.get '/aiutaci',(req,res) ->
+  res.render 'aiutaci.ejs'
   res.end
 
 app.use('/', express.static('public'))
@@ -107,6 +144,7 @@ app.get '/cerca', (req,res) ->
       throw err
     else
       cont=0
+      res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
       res.write '<meta charset="utf-8">'
       res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
       dochead = head(campo)
@@ -116,7 +154,7 @@ app.get '/cerca', (req,res) ->
         if scuole[i].nomescuola.toLowerCase().includes(campo.toLowerCase())
           scuolacercata[cont++]=scuole[i]
       if scuolacercata[0]==null
-        res.write 'Non è stata trovata alcuna scuole</body>'
+        res.write 'Non è stata trovata alcuna scuola</body>'
       else
         for c in [0...scuolacercata.length]
           res.write '<div class="container"><div class="dati"><h1>'+scuolacercata[c].nomescuola+'</h1>'+
@@ -129,7 +167,15 @@ app.get '/cerca', (req,res) ->
 
 
 
+app.post '/admin',(req,res) ->
+  passport.authenticate 'local', {
+    successRedirect: '/loggedin',
+    failureRedirect: '/admin.html',
+    failureFlash: true
+  }
 
+app.get '/loggedin',(req,res) ->
+  res.render 'admin.ejs'
 
 app.get '/search',(req,res) ->
   scuolagiusta=new Array()

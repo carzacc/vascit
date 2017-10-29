@@ -12,11 +12,15 @@
   "author": "Carmine e Angelo",
   "license": "EUPL-1.1",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "compression": "^1.7.1",
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-validator": "^4.2.1",
     "helmet": "^3.9.0",
-    "mysql": "^2.15.0"
+    "mysql": "^2.15.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
