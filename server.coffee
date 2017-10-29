@@ -15,15 +15,16 @@ crypto = require 'crypto'
 aiutaci = require './aiutaci'
 passport = require 'passport'
 bcrypt = require 'bcrypt-nodejs'
+mongo = require 'mongodb'
 LocalStrategy   = require('passport-local').Strategy
 
+MongoClient = mongo.MongoClient
 navbar = start.header
 head = start.head
 scripts = start.scripts
 adminbar = start.adminbar
 adminhead = start.adminhead
 connessione = mysql.createConnection process.env.CLEARDB_DATABASE_URL
-
 
 amministratore = 0
 trovato = false
