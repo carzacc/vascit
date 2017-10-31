@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "compile": "./node_modules/coffeescript/bin/coffee -c postproposta.coffee;./node_modules/coffeescript/bin/coffee -c server.coffee;node ./node_modules/babel-cli/bin/babel --presets react public/jsx/react.jsx -o public/js/react.js",
-    "start": "node server.js",
+    "start": "node server",
     "siege": "siege -c10 -t1M http://localhost:3000",
     "test": "npm run-script compile"
   },
@@ -14,11 +14,15 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "compression": "^1.7.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "express-validator": "^4.2.1",
     "helmet": "^3.9.0",
     "mongodb": "^2.2.33",
+    "mongoose": "^4.12.5",
     "mysql": "^2.15.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0"

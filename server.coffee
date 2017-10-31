@@ -10,6 +10,7 @@ helmet = require 'helmet'
 start = require './start'
 #cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
+cookieParser = require 'cookie-parser'
 expressValidator = require 'express-validator'
 crypto = require 'crypto'
 aiutaci = require './aiutaci'
@@ -17,6 +18,10 @@ passport = require 'passport'
 bcrypt = require 'bcrypt-nodejs'
 mongo = require 'mongodb'
 LocalStrategy   = require('passport-local').Strategy
+mongoose = require 'mongoose'
+flash = require 'connect-flash'
+session = require 'express-session'
+require('./config/passport')(passport);
 
 MongoClient = mongo.MongoClient
 navbar = start.header
@@ -25,9 +30,25 @@ scripts = start.scripts
 adminbar = start.adminbar
 adminhead = start.adminhead
 connessione = mysql.createConnection process.env.CLEARDB_DATABASE_URL
+app = express()
+
+promise = mongoose.connect process.env.MONGODB_URI, {useMongoClient: true}
+
 
 amministratore = 0
 trovato = false
+app.use helmet()
+app.use compression()
+app.use bodyParser.json()
+app.use bodyParser.urlencoded { extended: false }
+app.use expressValidator()
+
+app.use(cookieParser());
+app.use(session({ secret: process.env.SECRET }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 passport.use 'local-login', new LocalStrategy {
     usernameField : 'username',
@@ -37,40 +58,12 @@ passport.use 'local-login', new LocalStrategy {
     # find a user whose username is the same as the form's username
     # we are checking to see if the user trying to login already exists
     # if there are any errors, return the error before anything else
-    connessione.query "SELECT * FROM amministratori",(err,utenti,campi) ->
-        if err
-            return done(err);
-        # if no user is found, return the message
-        for i in [0...utenti.length]
-          if username==utenti[i].username
-            trovato=true
-            amministratore=1
-            break
-        if !trovato
-          return done(null, false, req.flash('loginMessage', 'No user found.')); # req.flash is the way to set flashdata using connect-flash
 
-        # if the user is found but the password is wrong
-        if utenti[i].password!=password
-            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); # create the loginMessage and save it to session as flashdata
-
-        # all is well, return successful user
-        return done(null, user);
+app.get '/',(req,res) ->
+  res.render 'index.ejs'
+  res.end
 
 
-app = express()
-app.use helmet()
-app.use compression()
-app.use bodyParser.json()
-app.use bodyParser.urlencoded { extended: false }
-app.use expressValidator()
-###########################################################################
-#app.get '/*', (req, res, next) ->                                       #
-# connessione.query "SELECT * FROM SCUOLE", err,scuole,campi ->          #
-#   for i in [0...scuole.length]                                         #
-#     if scuole[i].nomescuola==req.                                      #
-# console.log req.get                                                    #
-# next();                                                                #
-###########################################################################
 app.get '/aiutaci',(req,res) ->
   res.render 'aiutaci.ejs'
   res.end
@@ -166,7 +159,8 @@ app.get '/cerca', (req,res) ->
   res.write '</body>'
   res.end
 
-
+app.get '/admin.html' ,(req,res) ->
+  res.render 'admin.ejs'
 
 app.post '/admin',(req,res) ->
   passport.authenticate 'local', {
@@ -176,7 +170,9 @@ app.post '/admin',(req,res) ->
   }
 
 app.get '/loggedin',(req,res) ->
-  res.render 'admin.ejs'
+  res.render 'loggedin.ejs', {
+    user : req.user
+  }
 
 app.get '/search',(req,res) ->
   scuolagiusta=new Array()
@@ -229,6 +225,18 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
       '<b>Descrizione: </b>'+scuolagiusta[c].descrizione+'<br></div></div>'
   res.write scripts
   res.end '</body>'
+
+app.get '/logout',(req, res) ->
+  req.logout()
+  res.redirect '/'
+
+isLoggedIn=(req, res, next) ->
+
+    if req.isAuthenticated()
+        return next()
+
+    res.redirect '/'
+
 
 
 app.listen process.env.PORT, () ->
