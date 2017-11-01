@@ -150,21 +150,32 @@
   });
 
   app.get('/aggiungi', function(req, res) {
+    var myobj;
     req.sanitize('nomescuola').escape();
     req.sanitize('regione').escape();
     req.sanitize('comune').escape();
     req.sanitize('email').escape();
-    return connessione.query("INSERT INTO scuoleproposte (nomescuola,regione,comune,emailproponente)\nVALUES " + "(" + '"' + escapeHtml(req.query.nomescuola) + '"' + "," + '"' + escapeHtml(req.query.regione) + '"' + "," + '"' + escapeHtml(req.query.comune) + '"' + "," + '"' + escapeHtml(req.query.email) + '"' + ");", function(err, righe, campi) {
+    myobj = {
+      nomescuola: escapeHtml(req.query.nomescuola),
+      regione: escapeHtml(req.query.regione),
+      comune: escapeHtml(req.query.comune),
+      emailproponente: escapeHtml(req.query.email)
+    };
+    return MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
       if (err) {
         throw err;
-      } else {
+      }
+      return db.collection("scuoleproposte").insertOne(myobj, function(err, res) {
+        if (err) {
+          throw err;
+        }
         res.writeHead(200, {
           'Content-Type': 'text/html',
           'title': 'Tutto OK'
         });
         res.write('<link rel="stylesheet" type="text/css" href="/style/index.css">');
         return res.end('<h1>Abbiamo ricevuto la tua richiesta</h1>');
-      }
+      });
     });
   });
 
@@ -173,16 +184,13 @@
     scuolacercata = new Array();
     scuolacercata[0] = null;
     campo = escapeHtml(req.query.scuola);
-    connessione.query("SELECT * FROM SCUOLE", function(err, scuole, campi) {
-      var c, cont, dochead, i, j, k, ref, ref1, results;
+    MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
       if (err) {
         throw err;
-      } else {
+      }
+      return db.collection("scuole").find({}).toArray(function(err, scuole) {
+        var c, cont, dochead, i, j, k, ref, ref1, results;
         cont = 0;
-        res.writeHead(200, {
-          'Content-Type': 'text/html',
-          'title': 'Tutto OK'
-        });
         res.write('<meta charset="utf-8">');
         res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
         dochead = head(campo);
@@ -198,11 +206,11 @@
         } else {
           results = [];
           for (c = k = 0, ref1 = scuolacercata.length; 0 <= ref1 ? k < ref1 : k > ref1; c = 0 <= ref1 ? ++k : --k) {
-            results.push(res.write('<div class="container"><div class="dati"><h1>' + scuolacercata[c].nomescuola + '</h1>' + '<b>Comune: </b>' + scuolacercata[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolacercata[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolacercata[c].descrizione + '<br></div></div>'));
+            results.push(res.write('<a href=/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolacercata[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolacercata[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolacercata[c].descrizione + '<br></div></div>'));
           }
           return results;
         }
-      }
+      });
     });
     res.write(scripts);
     res.write('</body>');
@@ -235,16 +243,17 @@
     scuolagiustaproposta[0] = null;
     postodacercare = escapeHtml(req.query.q);
     cont = 0;
-    return connessione.query("SELECT * FROM scuole", function(err, scuole, campi) {
+    return MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
       if (err) {
         throw err;
-      } else {
+      }
+      return db.collection("scuole").find({}).toArray(function(err, scuole) {
         if (req.query.regocom === "comune") {
           return elaboracomune(req, res, scuole, scuolagiusta, scuolagiustaproposta, postodacercare);
         } else if (req.query.regocom === "regione") {
           return elaboraregione(req, res, scuole, scuolagiusta, scuolagiustaproposta, postodacercare);
         }
-      }
+      });
     });
   });
 
@@ -286,7 +295,7 @@
     } else {
       res.write("<h1>Scuole trovate:</h1><br>");
       for (c = j = 0, ref = scuolagiusta.length; 0 <= ref ? j < ref : j > ref; c = 0 <= ref ? ++j : --j) {
-        res.write('<div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
+        res.write('<a href=/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
       }
     }
     res.write(scripts);
@@ -296,6 +305,32 @@
   app.get('/logout', function(req, res) {
     req.logout();
     return res.redirect('/');
+  });
+
+  app.get('/:url', function(req, res) {
+    return MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
+      if (err) {
+        throw err;
+      }
+      return db.collection("scuole").find({}).toArray(function(err, scuole) {
+        var dochead, i, j, ref, risultato;
+        if (err) {
+          throw err;
+        }
+        risultato = [{}];
+        for (i = j = 0, ref = scuole.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+          if (scuole[i].nomescuola.startsWith(req.params.url)) {
+            risultato[i] = scuole[i];
+            break;
+          }
+        }
+        dochead = head(req.params.url);
+        res.write(dochead);
+        res.write(navbar);
+        res.write('<a href=/' + scuole[i].nomescuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br></div></div>');
+        return res.end;
+      });
+    });
   });
 
   isLoggedIn = function(req, res, next) {

@@ -3,7 +3,6 @@ http = require 'http'
 fs = require 'fs'
 util = require 'util'
 express = require 'express'
-mysql = require 'mysql'
 escapeHtml = require './escape'
 compression = require 'compression'
 helmet = require 'helmet'
@@ -29,7 +28,6 @@ head = start.head
 scripts = start.scripts
 adminbar = start.adminbar
 adminhead = start.adminhead
-connessione = mysql.createConnection process.env.CLEARDB_DATABASE_URL
 app = express()
 
 promise = mongoose.connect process.env.MONGODB_URI, {useMongoClient: true}
@@ -58,7 +56,6 @@ passport.use 'local-login', new LocalStrategy {
     # find a user whose username is the same as the form's username
     # we are checking to see if the user trying to login already exists
     # if there are any errors, return the error before anything else
-
 app.get '/',(req,res) ->
   res.render 'index.ejs'
   res.end
@@ -86,23 +83,17 @@ app.post '/aggiungi',(req,res) ->
   errors = req.validationErrors()
   if errors
     res.write errors
-  else
-    connessione.query "INSERT INTO scuoleproposte (nomescuola,regione,comune,emailproponente)\nVALUES "+
-    "("+
-    '"'+escapeHtml(req.query.nomescuola)+'"'+
-    ","+
-    '"'+escapeHtml(req.query.regione)+'"'+
-    ","+
-    '"'+escapeHtml(req.query.comune)+'"'+
-    ","+
-    '"'+escapeHtml(req.query.email)+'"'+
-    ");",(err,righe,campi) ->
+  myobj = {nomescuola: escapeHtml(req.query.nomescuola), regione: escapeHtml(req.query.regione), comune: escapeHtml(req.query.comune), emailproponente: escapeHtml(req.query.email)}
+  MongoClient.connect process.env.MONGODB_URI, (err,db) ->
+    if err
+      throw err
+    db.collection("scuoleproposte").insertOne myobj,(err,res) ->
       if err
         throw err
-      else
-        res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
-        res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
-        res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
+      res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
+      res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
+      res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
+
 
 
 
@@ -111,20 +102,13 @@ app.get '/aggiungi',(req,res) ->
   req.sanitize('regione').escape()
   req.sanitize('comune').escape()
   req.sanitize('email').escape()
-
-  connessione.query "INSERT INTO scuoleproposte (nomescuola,regione,comune,emailproponente)\nVALUES "+
-  "("+
-  '"'+escapeHtml(req.query.nomescuola)+'"'+
-  ","+
-  '"'+escapeHtml(req.query.regione)+'"'+
-  ","+
-  '"'+escapeHtml(req.query.comune)+'"'+
-  ","+
-  '"'+escapeHtml(req.query.email)+'"'+
-  ");",(err,righe,campi) ->
+  myobj = {nomescuola: escapeHtml(req.query.nomescuola), regione: escapeHtml(req.query.regione), comune: escapeHtml(req.query.comune), emailproponente: escapeHtml(req.query.email)}
+  MongoClient.connect process.env.MONGODB_URI, (err,db) ->
     if err
       throw err
-    else
+    db.collection("scuoleproposte").insertOne myobj,(err,res) ->
+      if err
+        throw err
       res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
       res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
       res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
@@ -133,12 +117,11 @@ app.get '/cerca', (req,res) ->
   scuolacercata = new Array()
   scuolacercata[0] = null
   campo = escapeHtml req.query.scuola
-  connessione.query "SELECT * FROM SCUOLE", (err,scuole,campi) ->
+  MongoClient.connect process.env.MONGODB_URI, (err,db) ->
     if err
       throw err
-    else
+    db.collection("scuole").find({}).toArray (err,scuole) ->
       cont=0
-      res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
       res.write '<meta charset="utf-8">'
       res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
       dochead = head(campo)
@@ -151,7 +134,7 @@ app.get '/cerca', (req,res) ->
         res.write 'Non è stata trovata alcuna scuola</body>'
       else
         for c in [0...scuolacercata.length]
-          res.write '<div class="container"><div class="dati"><h1>'+scuolacercata[c].nomescuola+'</h1>'+
+          res.write '<a href=/'+scuolagiusta[c].nomescuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
           '<b>Comune: </b>'+scuolacercata[c].comune+'<br>'+
           '<b>Valutazione: </b>'+scuolacercata[c].valutazione+'<br>'+
           '<b>Descrizione: </b>'+scuolacercata[c].descrizione+'<br></div></div>'
@@ -181,10 +164,10 @@ app.get '/search',(req,res) ->
   scuolagiustaproposta[0]=null
   postodacercare=escapeHtml(req.query.q)
   cont=0
-  connessione.query "SELECT * FROM scuole", (err,scuole,campi) ->
+  MongoClient.connect process.env.MONGODB_URI, (err,db) ->
     if err
       throw err
-    else
+    db.collection("scuole").find({}).toArray (err,scuole) ->
       if req.query.regocom=="comune"
         elaboracomune req,res,scuole,scuolagiusta,scuolagiustaproposta,postodacercare
       else if req.query.regocom=="regione"
@@ -219,7 +202,7 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
   else
     res.write "<h1>Scuole trovate:</h1><br>"
     for c in [0...scuolagiusta.length]
-      res.write '<div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1>'+
+      res.write '<a href=/'+scuolagiusta[c].nomescuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
       '<b>Comune: </b>'+scuolagiusta[c].comune+'<br>'+
       '<b>Valutazione: </b>'+scuolagiusta[c].valutazione+'<br>'+
       '<b>Descrizione: </b>'+scuolagiusta[c].descrizione+'<br></div></div>'
@@ -229,6 +212,30 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
 app.get '/logout',(req, res) ->
   req.logout()
   res.redirect '/'
+
+app.get '/:url', (req,res) ->
+  MongoClient.connect process.env.MONGODB_URI,(err,db) ->
+    if err
+      throw err
+    db.collection("scuole").find({}).toArray (err,scuole)  ->
+      if err
+        throw err
+      risultato = [{
+
+        }]
+      for i in [0...scuole.length]
+        if scuole[i].nomescuola.startsWith(req.params.url)
+          risultato[i]=scuole[i]
+          break
+      dochead = head(req.params.url)
+      res.write dochead
+      res.write navbar
+      res.write '<a href=/'+scuole[i].nomescuola+'><div class="container"><div class="dati"><h1>'+scuole[i].nomescuola+'</h1></a>'+
+      '<b>Comune: </b>'+scuole[i].comune+'<br>'+
+      '<b>Valutazione: </b>'+scuole[i].valutazione+'<br>'+
+      '<b>Descrizione: </b>'+scuole[i].descrizione+'<br></div></div>'
+      res.end
+
 
 isLoggedIn=(req, res, next) ->
 

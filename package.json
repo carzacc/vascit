@@ -23,7 +23,6 @@
     "helmet": "^3.9.0",
     "mongodb": "^2.2.33",
     "mongoose": "^4.12.5",
-    "mysql": "^2.15.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0"
   },
