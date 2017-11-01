@@ -214,6 +214,9 @@ app.get '/logout',(req, res) ->
   res.redirect '/'
 
 app.get '/:url', (req,res) ->
+  res.write '<meta charset="utf-8">'
+  res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
+
   MongoClient.connect process.env.MONGODB_URI,(err,db) ->
     if err
       throw err
