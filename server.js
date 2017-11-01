@@ -300,7 +300,7 @@
     } else {
       res.write("<h1>Scuole trovate:</h1><br>");
       for (c = j = 0, ref = scuolagiusta.length; 0 <= ref ? j < ref : j > ref; c = 0 <= ref ? ++j : --j) {
-        res.write('<a href=/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
+        res.write('<a href=/scuole/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
       }
     }
     res.write(scripts);
@@ -312,7 +312,7 @@
     return res.redirect('/');
   });
 
-  app.get('/:url', function(req, res) {
+  app.get('/scuole/:url', function(req, res) {
     return MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
       if (err) {
         throw err;
@@ -337,7 +337,7 @@
         res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
         res.write(dochead);
         res.write(navbar);
-        res.write('<a href=/' + scuole[i].nomescuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br></div></div>');
+        res.write('<a href=/scuole/' + scuole[i].nomescuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br>' + '<a href="/login">Accedi per aggiungere una valutazione</a></div></div>');
         res.write(scripts);
         return res.end('');
       });
