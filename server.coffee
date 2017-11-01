@@ -214,9 +214,6 @@ app.get '/logout',(req, res) ->
   res.redirect '/'
 
 app.get '/:url', (req,res) ->
-  res.write '<meta charset="utf-8">'
-  res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
-
   MongoClient.connect process.env.MONGODB_URI,(err,db) ->
     if err
       throw err
@@ -224,20 +221,24 @@ app.get '/:url', (req,res) ->
       if err
         throw err
       risultato = [{
-
         }]
       for i in [0...scuole.length]
         if scuole[i].nomescuola.startsWith(req.params.url)
           risultato[i]=scuole[i]
           break
       dochead = head(req.params.url)
+      res.writeHead 200, {'Content-Type': 'text/html'}
+      res.write '<meta charset="utf-8">'
+      res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
       res.write dochead
       res.write navbar
       res.write '<a href=/'+scuole[i].nomescuola+'><div class="container"><div class="dati"><h1>'+scuole[i].nomescuola+'</h1></a>'+
       '<b>Comune: </b>'+scuole[i].comune+'<br>'+
       '<b>Valutazione: </b>'+scuole[i].valutazione+'<br>'+
       '<b>Descrizione: </b>'+scuole[i].descrizione+'<br></div></div>'
-      res.end
+      <a href="/login">Accedi per aggiungere una valutazione</a>
+      res.write scripts
+      res.end ''
 
 
 isLoggedIn=(req, res, next) ->

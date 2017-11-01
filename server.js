@@ -313,8 +313,6 @@
   });
 
   app.get('/:url', function(req, res) {
-    res.write('<meta charset="utf-8">');
-    res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
     return MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
       if (err) {
         throw err;
@@ -332,10 +330,16 @@
           }
         }
         dochead = head(req.params.url);
+        res.writeHead(200, {
+          'Content-Type': 'text/html'
+        });
+        res.write('<meta charset="utf-8">');
+        res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
         res.write(dochead);
         res.write(navbar);
         res.write('<a href=/' + scuole[i].nomescuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br></div></div>');
-        return res.end;
+        res.write(scripts);
+        return res.end('');
       });
     });
   });

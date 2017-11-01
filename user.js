@@ -7,6 +7,7 @@ var amministratori = mongoose.Schema({
     local            : {
         username     : String,
         password     : String,
+        amministratore: String,
     }
 
 });
