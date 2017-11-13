@@ -220,29 +220,6 @@ app.get '/:url', (req,res) ->
     db.collection("scuole").find({}).toArray (err,scuole)  ->
       if err
         throw err
-<<<<<<< HEAD
-      risultato = [{
-        }]
-      for i in [0...scuole.length]
-        if scuole[i].nomescuola.startsWith(req.params.url)
-          risultato[i]=scuole[i]
-          break
-      if risultato= [{}]
-        next();
-      dochead = head(req.params.url)
-      res.writeHead 200, {'Content-Type': 'text/html'}
-      res.write '<meta charset="utf-8">'
-      res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
-      res.write dochead
-      res.write navbar
-      res.write '<a href=/'+scuole[i].nomescuola+'><div class="container"><div class="dati"><h1>'+scuole[i].nomescuola+'</h1></a>'+
-      '<b>Comune: </b>'+scuole[i].comune+'<br>'+
-      '<b>Valutazione: </b>'+scuole[i].valutazione+'<br>'+
-      '<b>Descrizione: </b>'+scuole[i].descrizione+'<br></div></div>'
-      <a href="/login">Accedi per aggiungere una valutazione</a>
-      res.write scripts
-      res.end ''
-=======
       i=req.params.url
       if scuole[i] != undefined
         res.writeHead 200, {'Content-Type': 'text/html'}
@@ -263,7 +240,6 @@ app.get '/:url', (req,res) ->
         console.log scuole[i]
         console.log 'totale:'+i
         console.log scuole
->>>>>>> ebf6eb24edad97369a014220001d638338cc9d9f
 
 
 isLoggedIn=(req, res, next) ->
