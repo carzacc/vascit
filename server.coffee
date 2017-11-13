@@ -226,6 +226,8 @@ app.get '/:url', (req,res) ->
         if scuole[i].nomescuola.startsWith(req.params.url)
           risultato[i]=scuole[i]
           break
+      if risultato= [{}]
+        next();
       dochead = head(req.params.url)
       res.writeHead 200, {'Content-Type': 'text/html'}
       res.write '<meta charset="utf-8">'
@@ -242,10 +244,8 @@ app.get '/:url', (req,res) ->
 
 
 isLoggedIn=(req, res, next) ->
-
     if req.isAuthenticated()
         return next()
-
     res.redirect '/'
 
 
