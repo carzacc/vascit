@@ -341,24 +341,6 @@
           console.log('totale:' + i);
           return console.log(scuole);
         }
-<<<<<<< HEAD
-        if (risultato = [{}]) {
-          next();
-        }
-        dochead = head(req.params.url);
-        res.writeHead(200, {
-          'Content-Type': 'text/html'
-        });
-        res.write('<meta charset="utf-8">');
-        res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
-        res.write(dochead);
-        res.write(navbar);
-        res.write('<a href=/' + scuole[i].nomescuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br></div></div>');
-        <a href="/login">Accedi per aggiungere una valutazione</a>;
-        res.write(scripts);
-        return res.end('');
-=======
->>>>>>> ebf6eb24edad97369a014220001d638338cc9d9f
       });
     });
   });
