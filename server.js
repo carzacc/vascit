@@ -211,7 +211,7 @@
         } else {
           results = [];
           for (c = k = 0, ref1 = scuolacercata.length; 0 <= ref1 ? k < ref1 : k > ref1; c = 0 <= ref1 ? ++k : --k) {
-            results.push(res.write('<a href=/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolacercata[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolacercata[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolacercata[c].descrizione + '<br></div></div>'));
+            results.push(res.write('<a href=/' + scuolagiusta[c].idscuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolacercata[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolacercata[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolacercata[c].descrizione + '<br></div></div>'));
           }
           return results;
         }
@@ -300,7 +300,7 @@
     } else {
       res.write("<h1>Scuole trovate:</h1><br>");
       for (c = j = 0, ref = scuolagiusta.length; 0 <= ref ? j < ref : j > ref; c = 0 <= ref ? ++j : --j) {
-        res.write('<a href=/' + scuolagiusta[c].nomescuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
+        res.write('<a href=/' + scuolagiusta[c].idscuola + '><div class="container"><div class="dati"><h1>' + scuolagiusta[c].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuolagiusta[c].comune + '<br>' + '<b>Valutazione: </b>' + scuolagiusta[c].valutazione + '<br>' + '<b>Descrizione: </b>' + scuolagiusta[c].descrizione + '<br></div></div>');
       }
     }
     res.write(scripts);
@@ -318,17 +318,30 @@
         throw err;
       }
       return db.collection("scuole").find({}).toArray(function(err, scuole) {
-        var dochead, i, j, ref, risultato;
+        var dochead, i;
         if (err) {
           throw err;
         }
-        risultato = [{}];
-        for (i = j = 0, ref = scuole.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-          if (scuole[i].nomescuola.startsWith(req.params.url)) {
-            risultato[i] = scuole[i];
-            break;
-          }
+        i = req.params.url;
+        if (scuole[i] !== void 0) {
+          res.writeHead(200, {
+            'Content-Type': 'text/html'
+          });
+          res.write('<meta charset="utf-8">');
+          res.write('<link rel="stylesheet" type="text/css" href="/style/landing.css">');
+          dochead = head(req.params.url);
+          res.write(dochead);
+          res.write(navbar);
+          res.write('<a href=/scuole/' + scuole[i].idscuola + '><div class="container"><div class="dati"><h1>' + scuole[i].nomescuola + '</h1></a>' + '<b>Comune: </b>' + scuole[i].comune + '<br>' + '<b>Valutazione: </b>' + scuole[i].valutazione + '<br>' + '<b>Descrizione: </b>' + scuole[i].descrizione + '<br>' + '<a href="/login">Accedi per aggiungere una valutazione</a></div></div>');
+          res.write(scripts);
+          return res.end('');
+        } else {
+          res.render('404.ejs');
+          console.log(scuole[i]);
+          console.log('totale:' + i);
+          return console.log(scuole);
         }
+<<<<<<< HEAD
         if (risultato = [{}]) {
           next();
         }
@@ -344,6 +357,8 @@
         <a href="/login">Accedi per aggiungere una valutazione</a>;
         res.write(scripts);
         return res.end('');
+=======
+>>>>>>> ebf6eb24edad97369a014220001d638338cc9d9f
       });
     });
   });

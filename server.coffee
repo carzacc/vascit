@@ -134,7 +134,7 @@ app.get '/cerca', (req,res) ->
         res.write 'Non è stata trovata alcuna scuola</body>'
       else
         for c in [0...scuolacercata.length]
-          res.write '<a href=/'+scuolagiusta[c].nomescuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
+          res.write '<a href=/'+scuolagiusta[c].idscuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
           '<b>Comune: </b>'+scuolacercata[c].comune+'<br>'+
           '<b>Valutazione: </b>'+scuolacercata[c].valutazione+'<br>'+
           '<b>Descrizione: </b>'+scuolacercata[c].descrizione+'<br></div></div>'
@@ -202,7 +202,7 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
   else
     res.write "<h1>Scuole trovate:</h1><br>"
     for c in [0...scuolagiusta.length]
-      res.write '<a href=/'+scuolagiusta[c].nomescuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
+      res.write '<a href=/'+scuolagiusta[c].idscuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
       '<b>Comune: </b>'+scuolagiusta[c].comune+'<br>'+
       '<b>Valutazione: </b>'+scuolagiusta[c].valutazione+'<br>'+
       '<b>Descrizione: </b>'+scuolagiusta[c].descrizione+'<br></div></div>'
@@ -220,6 +220,7 @@ app.get '/:url', (req,res) ->
     db.collection("scuole").find({}).toArray (err,scuole)  ->
       if err
         throw err
+<<<<<<< HEAD
       risultato = [{
         }]
       for i in [0...scuole.length]
@@ -241,6 +242,28 @@ app.get '/:url', (req,res) ->
       <a href="/login">Accedi per aggiungere una valutazione</a>
       res.write scripts
       res.end ''
+=======
+      i=req.params.url
+      if scuole[i] != undefined
+        res.writeHead 200, {'Content-Type': 'text/html'}
+        res.write '<meta charset="utf-8">'
+        res.write '<link rel="stylesheet" type="text/css" href="/style/landing.css">'
+        dochead = head req.params.url
+        res.write dochead
+        res.write navbar
+        res.write '<a href=/scuole/'+scuole[i].idscuola+'><div class="container"><div class="dati"><h1>'+scuole[i].nomescuola+'</h1></a>'+
+        '<b>Comune: </b>'+scuole[i].comune+'<br>'+
+        '<b>Valutazione: </b>'+scuole[i].valutazione+'<br>'+
+        '<b>Descrizione: </b>'+scuole[i].descrizione+'<br>'+
+        '<a href="/login">Accedi per aggiungere una valutazione</a></div></div>'
+        res.write scripts
+        res.end ''
+      else
+        res.render '404.ejs'
+        console.log scuole[i]
+        console.log 'totale:'+i
+        console.log scuole
+>>>>>>> ebf6eb24edad97369a014220001d638338cc9d9f
 
 
 isLoggedIn=(req, res, next) ->
