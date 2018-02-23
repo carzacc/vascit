@@ -1,36 +1,27 @@
-module.exports.header =     `<body><nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="/">Vascit</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/admin.html">Admin <span class="sr-only">(current)</span></a>
+module.exports.header =     `<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">Vascit</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/aiutaci">Proposta scuole</a>
-          </li>
-          <li class="nav-item">
-            <!--a class="nav-link disabled" href="#">Disabled</a-->
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://vascit.carzacc.info" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sito vecchio</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="/home.html">Home(ricerca scuole)</a>
-              <a class="dropdown-item" href="/nuovascuola.html">Aggiunta scuole</a>
-              <!--a class="dropdown-item" href="#">Something else here</a-->
-            </div>
-
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0" method="get" action="/cerca">
-          <input class="form-control mr-sm-2" type="text" name="scuola" placeholder="Cerca scuole per nome" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
-    </nav>`
+      <li class="nav-item">
+        <a class="nav-link" href="/admin.html">Admin <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/aiutaci">Aiutaci: proponi l'aggiunta di una scuola</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" method="get" action="/cerca">
+      <input class="form-control mr-sm-2" type="text" name="scuola" placeholder="Cerca scuole per nome" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Cerca</button>
+    </form>
+  </div>
+</nav>`
 module.exports.head = function(valore)  {
   let datornare=  ` <head>
   <meta charset="utf-8">

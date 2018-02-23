@@ -69,49 +69,30 @@ app.use('/', express.static('public'))
 
 
 app.post '/aggiungi',(req,res) ->
-  req.checkBody('nomescuole', 'Nome scuola non valido').isAlpha();
+  req.checkBody('nome', 'Nome scuola non valido').isAlpha();
   req.checkBody('regione', 'Nome regione non valido').isAlpha();
   req.checkBody('comune', 'Nome comune non valido').isAlpha();
-  req.sanitizeBody('nomescuola').escape()
+  req.sanitizeBody('nome').escape()
   req.sanitizeBody('regione').escape()
   req.sanitizeBody('comune').escape()
   req.sanitizeBody('email').escape()
-  nomescuola = req.body.nomescuola
+  nomescuola = req.body.nome
   regione = req.body.regione
   comune = req.body.comune
   email = req.body.email
-  errors = req.validationErrors()
-  if errors
-    res.write errors
-  myobj = {nomescuola: escapeHtml(req.query.nomescuola), regione: escapeHtml(req.query.regione), comune: escapeHtml(req.query.comune), emailproponente: escapeHtml(req.query.email)}
+  myobj = {nomescuola: escapeHtml(nomescuola), regione: escapeHtml(regione), comune: escapeHtml(comune), emailproponente: escapeHtml(email)}
+  response = res
   MongoClient.connect process.env.MONGODB_URI, (err,db) ->
     if err
       throw err
     db.collection("scuoleproposte").insertOne myobj,(err,res) ->
       if err
         throw err
-      res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
-      res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
-      res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
-
-
-
-
-app.get '/aggiungi',(req,res) ->
-  req.sanitize('nomescuola').escape()
-  req.sanitize('regione').escape()
-  req.sanitize('comune').escape()
-  req.sanitize('email').escape()
-  myobj = {nomescuola: escapeHtml(req.query.nomescuola), regione: escapeHtml(req.query.regione), comune: escapeHtml(req.query.comune), emailproponente: escapeHtml(req.query.email)}
-  MongoClient.connect process.env.MONGODB_URI, (err,db) ->
-    if err
-      throw err
-    db.collection("scuoleproposte").insertOne myobj,(err,res) ->
-      if err
-        throw err
-      res.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
-      res.write '<link rel="stylesheet" type="text/css" href="/style/index.css">'
-      res.end '<h1>Abbiamo ricevuto la tua richiesta</h1>'
+      response.writeHead 200, {'Content-Type': 'text/html','title': 'Tutto OK'}
+      response.write navbar+'<main role="main" class="container"><div class="starter-template"><br><br><br><br><p class ="lead">'
+      response.end '<h1>Abbiamo ricevuto la tua richiesta</h1></p>'+scripts+'</body>'
+    return
+  return
 
 app.get '/cerca', (req,res) ->
   scuolacercata = new Array()
@@ -202,7 +183,7 @@ mostradati =(res,req,scuolagiusta,scuolagiustaproposta,scuole,postodacercare) ->
   else
     res.write "<h1>Scuole trovate:</h1><br>"
     for c in [0...scuolagiusta.length]
-      res.write '<a href=/'+scuolagiusta[c].idscuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
+      res.write '<a href=/scuole/'+scuolagiusta[c].idscuola+'><div class="container"><div class="dati"><h1>'+scuolagiusta[c].nomescuola+'</h1></a>'+
       '<b>Comune: </b>'+scuolagiusta[c].comune+'<br>'+
       '<b>Valutazione: </b>'+scuolagiusta[c].valutazione+'<br>'+
       '<b>Descrizione: </b>'+scuolagiusta[c].descrizione+'<br></div></div>'
@@ -213,7 +194,7 @@ app.get '/logout',(req, res) ->
   req.logout()
   res.redirect '/'
 
-app.get '/:url', (req,res) ->
+app.get '/scuole/:url', (req,res) ->
   MongoClient.connect process.env.MONGODB_URI,(err,db) ->
     if err
       throw err
